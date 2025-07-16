@@ -31,7 +31,7 @@ variable "log_level" {
   type        = string
 }
 
-variable "ofac_blocked_countries" {
+variable "ofac_countries" {
   description = "The list of countries to block"
   type        = string
   default     = ""
