@@ -38,7 +38,7 @@ This module creates an ECS cluster and an autoscaling group of EC2 instances to 
 | <a name="input_log_level"></a> [log\_level](#input\_log\_level) | Defines logging level for the application |  <pre lang="json">string</pre> |  <pre lang="json">n/a</pre> |  yes |
 | <a name="input_max_capacity"></a> [max\_capacity](#input\_max\_capacity) | Maximum number of instances in the autoscaling group |  <pre lang="json">number</pre> |  <pre lang="json">8</pre> |  no |
 | <a name="input_min_capacity"></a> [min\_capacity](#input\_min\_capacity) | Minimum number of instances in the autoscaling group |  <pre lang="json">number</pre> |  <pre lang="json">2</pre> |  no |
-| <a name="input_ofac_blocked_countries"></a> [ofac\_blocked\_countries](#input\_ofac\_blocked\_countries) | The list of countries to block |  <pre lang="json">string</pre> |  <pre lang="json">n/a</pre> |  yes |
+| <a name="input_ofac_countries"></a> [ofac\_blocked\_countries](#input\_ofac\_blocked\_countries) | The list of countries to block |  <pre lang="json">string</pre> |  <pre lang="json">n/a</pre> |  yes |
 | <a name="input_port"></a> [port](#input\_port) | The port the app listens on |  <pre lang="json">number</pre> |  <pre lang="json">n/a</pre> |  yes |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | The IDs of the private subnets to deploy to |  <pre lang="json">list(string)</pre> |  <pre lang="json">n/a</pre> |  yes |
 | <a name="input_prometheus_endpoint"></a> [prometheus\_endpoint](#input\_prometheus\_endpoint) | The endpoint of the Prometheus server to use for monitoring |  <pre lang="json">string</pre> |  <pre lang="json">n/a</pre> |  yes |

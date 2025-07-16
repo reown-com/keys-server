@@ -28,11 +28,11 @@ module "ecs" {
   allowed_lb_ingress_cidr_blocks  = module.vpc.vpc_cidr_block
 
   # Application
-  port                   = 8080
-  keystore_addr          = module.keystore.connection_url
-  log_level              = var.log_level
-  ofac_blocked_countries = var.ofac_blocked_countries
-  project_id             = var.project_id
+  port           = 8080
+  keystore_addr  = module.keystore.connection_url
+  log_level      = var.log_level
+  project_id     = var.project_id
+  ofac_countries = var.ofac_countries
 
   # Monitoring
   prometheus_endpoint = aws_prometheus_workspace.prometheus.prometheus_endpoint
