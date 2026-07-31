@@ -1,8 +1,17 @@
 # Clickops alert rules codified verbatim from AMG "General Alerting Alerts" folder
 # (folder uid eessxa3xe1b0gc). Captured live 2026-07-23 from /api/v1/provisioning/alert-rules
 # where provenance=="" (UI-created). Query/model/datasource UID/for/interval/noData/execErr/
-# labels/annotations are reproduced EXACTLY, targeting AMG as-is. The __legacy_*__ labels
-# preserve the existing OpsGenie routing untouched (re-routing is a migration-phase decision).
+# labels/annotations are reproduced EXACTLY, targeting AMG as-is.
+#
+# ⚠️ ROUTING — DO NOT CHANGE IN THIS PR. These rules page OpsGenie ONLY, via the legacy
+# __legacy_use_channels__ / __legacy_c_Rust_Team_Grafana__ labels. They carry NO og_team/service
+# labels, so they do NOT reach incident.io. There is intent to decommission OpsGenie ("all teams
+# on incident.io for a couple of weeks", per team discussion 2026-07 — VERIFY before acting).
+# If OpsGenie is torn down before these are re-homed onto incident.io, these pages are SILENTLY
+# LOST. Required first (migration task, not this capture PR):
+#   1. add the incident.io routing labels (og_team/service) the Rust team's route matches on;
+#   2. confirm an incident.io alert route exists for the Rust team;
+#   3. dual-run, verify a test page reaches incident.io, THEN drop the __legacy_*__ labels.
 #
 # THESE RULES ALREADY EXIST IN AMG. Do NOT `terraform apply` before `terraform import`
 # (see README_clickops_import.md) or they will be duplicated.
