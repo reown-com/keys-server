@@ -4,7 +4,10 @@ use {
         public_key::PublicKey,
     },
     serde::{de::DeserializeOwned, Deserialize, Serialize},
-    std::str,
+    std::{
+        str,
+        time::{SystemTime, UNIX_EPOCH},
+    },
     thiserror::Error as ThisError,
 };
 
@@ -114,6 +117,22 @@ impl JwtHeader {
 
 pub trait JwtClaims: DeserializeOwned + Serialize + JwtVerifierByIssuer {
     fn is_valid(&self) -> bool;
+}
+
+/// Invite and unregister JWTs carry `exp` and `iat`, but claim `is_valid`
+/// implementations previously ignored both (the comments still say "TODO").
+/// A captured signed JWT then stayed accepted after expiry.
+///
+/// 60s skew matches typical JWT leeway. Clock failure fail-closes.
+pub(crate) fn claims_are_within_validity_window(exp: usize, iat: usize) -> bool {
+    let now = match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(d) => d.as_secs() as usize,
+        Err(_) => return false,
+    };
+    const SKEW_SECS: usize = 60;
+    let min_now = now.saturating_sub(SKEW_SECS);
+    let max_now = now.saturating_add(SKEW_SECS);
+    exp > min_now && iat <= max_now
 }
 
 impl<T: JwtClaims> Jwt<T> {

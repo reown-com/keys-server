@@ -65,6 +65,28 @@ fn jwt_verify_invite_key_success() {
     assert!(jwt.verify().is_ok());
 }
 
+#[test]
+fn claims_window_rejects_expired_and_future_iat() {
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as usize;
+
+    assert!(claims_are_within_validity_window(now + 3600, now));
+    assert!(
+        !claims_are_within_validity_window(now.saturating_sub(120), now),
+        "expired exp must fail closed"
+    );
+    assert!(
+        !claims_are_within_validity_window(0, now),
+        "exp=0 must fail closed"
+    );
+    assert!(
+        !claims_are_within_validity_window(now + 3600, now + 120),
+        "iat in the future must fail closed"
+    );
+}
+
 /// Test that we can verify a JWT.
 #[test]
 fn jwt_verify_fail() {
