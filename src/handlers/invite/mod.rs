@@ -1,7 +1,7 @@
 use {
     crate::auth::{
         did,
-        jwt::{JwtClaims, JwtVerifierByIssuer},
+        jwt::{claims_are_within_validity_window, JwtClaims, JwtVerifierByIssuer},
     },
     serde::{Deserialize, Serialize},
 };
@@ -34,12 +34,10 @@ impl JwtClaims for InviteKeyClaims {
     fn is_valid(&self) -> bool {
         // TODO: Add validation:
         // aud must be equal this dns?
-        // exp must be in future
-        // iat must be in past
         // iss must be valid did:key
         // pkh must be valid did:pkh
 
-        did::validate_x25519(&self.sub)
+        did::validate_x25519(&self.sub) && claims_are_within_validity_window(self.exp, self.iat)
     }
 }
 
@@ -51,13 +49,24 @@ impl JwtVerifierByIssuer for InviteKeyClaims {
 
 #[cfg(test)]
 mod test_claims_validation {
-    use super::{InviteKeyClaims, JwtClaims as _};
+    use {
+        super::{InviteKeyClaims, JwtClaims as _},
+        std::time::{SystemTime, UNIX_EPOCH},
+    };
+
+    fn now_secs() -> usize {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as usize
+    }
 
     fn default() -> InviteKeyClaims {
+        let now = now_secs();
         InviteKeyClaims {
             aud: String::new(),
-            exp: 0,
-            iat: 0,
+            exp: now + 3600,
+            iat: now.saturating_sub(1),
             iss: String::new(),
             sub: String::new(),
             pkh: String::new(),
@@ -91,5 +100,15 @@ mod test_claims_validation {
 
         claims.sub = "did:key:z6LSoMdmJz2Djah2P4L9taDmtqeJ6wwd2HhKZvNToBmvaczQ".to_string();
         assert!(claims.is_valid());
+    }
+
+    #[test]
+    fn fails_on_expired_exp() {
+        let mut claims = default();
+        claims.sub = "did:key:z6LSeu9HkTHSfLLeUs2nnzUSNedgDUevfNQgQjQC23ZCit6F".to_string();
+        assert!(claims.is_valid());
+
+        claims.exp = now_secs().saturating_sub(120);
+        assert!(!claims.is_valid());
     }
 }
